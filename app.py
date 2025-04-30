@@ -199,7 +199,7 @@ from streamlit.components.v1 import html
 from PIL import Image
 
 # Load and display logo
-logo = Image.open("/Users/karishmamehta/Documents/Practicum_Project/Arctos_logo.png")
+logo = Image.open("Arctos_logo.png")
 st.image(logo, width=140)
 
 st.markdown("<h1 style='color:white;'>🔎 Arctos Query Search Chatbot</h1>", unsafe_allow_html=True)
