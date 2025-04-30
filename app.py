@@ -202,11 +202,11 @@ from PIL import Image
 logo = Image.open("Arctos_logo.png")
 st.image(logo, width=140)
 
-st.markdown("<h1 style='color:white;'>🔎 Arctos Query Search Chatbot</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color: #003366;'>🔎 Arctos Query Search Chatbot</h1>", unsafe_allow_html=True)
 
 # Description
 st.markdown("""
-<div style='text-align: left; font-size: 16px; line-height: 1.6; color: #ddd;'>
+<div style='text-align: left; font-size: 16px; line-height: 1.6;color: #003366;'>
 This tool helps researchers search the Arctos database using natural language queries.<br>
 Enter phrases like <em>'Find shrews collected in New York in 1999'</em>
 or <em>'Search for Canis latrans in Alaska in 2001'</em>.<br>
