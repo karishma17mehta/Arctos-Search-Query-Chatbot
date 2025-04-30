@@ -27,8 +27,9 @@ from urllib.parse import urlencode
 # Load environment variables
 load_dotenv()
 
-client = openai.OpenAI(
-    api_key="OPENAI_API_KEY")
+import streamlit as st
+
+client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 ARCTOS_API_KEY = st.secrets["ARCTOS_API_KEY"]
 ARCTOS_API_BASE_URL = "https://arctos.database.museum/component/api/v2/catalog.cfc"
 
