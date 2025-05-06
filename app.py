@@ -66,9 +66,19 @@ FIELD_TO_ARCTOS_PARAM = {
 # Extract fields function
 def extract_query_fields(user_input):
     prompt = f"""
-    Extract the taxonomy, location, country, state, collector, preparation type, sex, lifestage, year, interaction type (if any), part (if any), media type (if any), and type status (if any) from this user query: '{user_input}'.
-    Return as a JSON dictionary using only these keys if mentioned in the query: 'taxon_name', 'verbatim_date', 'part', 'media_type', 'type_status', 'has tissue', 'collector', 'country', 'state', 'location'.
-    Do not include fields like 'preparation_type'.
+    Extract the taxonomy, location, country, state, collector, year (verbatim_date), interaction type (if any),
+    part (if any), media type (if any), and type status (if any) from this user query: '{user_input}'.
+
+    Return the result as a JSON dictionary using only these keys if mentioned:
+    'taxon_name', 'verbatim_date', 'part', 'media_type', 'type_status', 
+    'has tissue', 'collector', 'country', 'state', 'location'.
+
+    Additional instructions:
+    - Use 'location' for any locality-specific terms, including lakes, cities, landmarks, or phrases like "Kirby Lake, Cal Young Pond".
+    - Do NOT assign institutions (e.g., "Abilene Christian University") to 'verbatim_date' or 'collector'.
+    - If a location contains multiple places, combine them as a single string under 'location'.
+    - Only use 'collector' for human names.
+    - Skip any field not explicitly stated. Output should be valid JSON only.
     """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -76,6 +86,7 @@ def extract_query_fields(user_input):
     )
     extracted = response.choices[0].message.content
     return json.loads(extracted)
+
 
 
 # In[25]:
