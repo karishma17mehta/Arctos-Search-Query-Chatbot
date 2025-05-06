@@ -250,8 +250,6 @@ if search_clicked:
                 results = query_arctos(fields)
                 formatted = format_results(results)
 
-                st.subheader("📋 Search Results")
-                st.text(formatted)
             except Exception as e:
                 st.error(f"Error: {e}")
 elif clear_clicked:
