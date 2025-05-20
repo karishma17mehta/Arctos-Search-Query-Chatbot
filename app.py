@@ -273,31 +273,6 @@ def generate_arctos_search_url(fields):
 # In[75]:
 
 
-# 📍 INTERACTIVE CHATBOT TEST
-
-# Example user input
-user_input = input("Enter your specimen search query: ")
-
-# Extract fields
-fields = extract_query_fields(user_input)
-print("\nExtracted Fields:")
-print(fields)
-
-# Generate Arctos URL
-arctos_url = generate_arctos_search_url(fields)
-print("\nGenerated Arctos Search URL:")
-print(arctos_url)
-
-# Query Arctos
-results = query_arctos(fields)
-# Format and show results
-response = format_results(results)
-print("\nChatbot Response:\n")
-print(response)
-
-# In[53]:
-
-
 import streamlit as st
 
 
