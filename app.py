@@ -140,7 +140,7 @@ def format_results(results):
 import pandas as pd
 
 # Load institution-to-guid_prefix mapping
-portal_df = pd.read_csv("/Users/karishmamehta/Documents/Practicum_Project/Streamlit_Community_Cloud/_portals.csv")  # Adjust path if needed
+portal_df = pd.read_csv("_portals.csv")  # Adjust path if needed
 
 # Normalize institution names and group guid_prefixes
 institution_to_prefix = {}
