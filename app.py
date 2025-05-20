@@ -352,11 +352,18 @@ if search_clicked:
                 search_url = generate_arctos_search_url(fields)
                 st.markdown(f"🔗 [**Open Arctos Search URL**]({search_url})")
 
+                # ✅ Log search to Google Sheets
+                log_to_google_sheets(user_query, fields, search_url)
+
                 results = query_arctos(fields)
                 formatted = format_results(results)
 
+                st.subheader("📋 Search Results")
+                st.text(formatted)
+
             except Exception as e:
                 st.error(f"Error: {e}")
+
 elif clear_clicked:
     st.experimental_rerun()
 
