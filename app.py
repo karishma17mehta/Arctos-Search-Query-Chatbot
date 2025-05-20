@@ -355,3 +355,39 @@ if search_clicked:
                 st.error(f"Error: {e}")
 elif clear_clicked:
     st.experimental_rerun()
+
+
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+from datetime import datetime
+
+def log_to_google_sheets(query, fields, url):
+    try:
+        creds = {
+            "type": st.secrets["google_service_account"]["type"],
+            "project_id": st.secrets["google_service_account"]["project_id"],
+            "private_key_id": st.secrets["google_service_account"]["private_key_id"],
+            "private_key": st.secrets["google_service_account"]["private_key"].replace("\\n", "\n"),
+            "client_email": st.secrets["google_service_account"]["client_email"],
+            "client_id": st.secrets["google_service_account"]["client_id"],
+            "auth_uri": st.secrets["google_service_account"]["auth_uri"],
+            "token_uri": st.secrets["google_service_account"]["token_uri"],
+            "auth_provider_x509_cert_url": st.secrets["google_service_account"]["auth_provider_x509_cert_url"],
+            "client_x509_cert_url": st.secrets["google_service_account"]["client_x509_cert_url"]
+        }
+
+        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds_obj = ServiceAccountCredentials.from_json_keyfile_dict(creds, scope)
+        client = gspread.authorize(creds_obj)
+
+        sheet = client.open("arctos_search_logs").sheet1  # Change if using a different sheet name
+
+        sheet.append_row([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            query,
+            json.dumps(fields),
+            url
+        ])
+    except Exception as e:
+        st.warning(f"Logging failed: {e}")
+
