@@ -34,13 +34,13 @@ ARCTOS_API_KEY = st.secrets["ARCTOS_API_KEY"]
 ARCTOS_API_BASE_URL = "https://arctos.database.museum/component/api/v2/catalog.cfc"
 
 
-# In[23]:
+# In[5]:
 
 
 # Define field mapping
 FIELD_TO_ARCTOS_PARAM = {
-    "taxonomy": "taxon_name",
-    "taxon": "taxon_name",
+    "taxonomy": "scientific_name",
+    "taxon": "scientific_name",
     "location": "spec_locality",
     "any_geog": "any_geog",
     "country": "country",
@@ -57,28 +57,32 @@ FIELD_TO_ARCTOS_PARAM = {
     "scientific_name_match": "scientific_name_match_type",
     "agent role": "coll_role",
     "guid_prefix": "guid_prefix",
+    "institution": "guid_prefix",
 }
 
 
-# In[24]:
+# In[19]:
 
 
-# Extract fields function
+# Define extract query function
 def extract_query_fields(user_input):
     prompt = f"""
-    Extract the taxonomy, location, country, state, collector, year (verbatim_date), interaction type (if any),
+    Extract the taxonomy, location, country, state, collector, year (verbatim_date), institution name (if any), interaction type (if any),
     part (if any), media type (if any), and type status (if any) from this user query: '{user_input}'.
 
     Return the result as a JSON dictionary using only these keys if mentioned:
     'taxon_name', 'verbatim_date', 'part', 'media_type', 'type_status', 
-    'has tissue', 'collector', 'country', 'state', 'location'.
+    'has tissue', 'collector', 'country', 'state', 'location', 'institution'.
 
     Additional instructions:
-    - Use 'location' for any locality-specific terms, including lakes, cities, landmarks, or phrases like "Kirby Lake, Cal Young Pond".
-    - Do NOT assign institutions (e.g., "Abilene Christian University") to 'verbatim_date' or 'collector'.
-    - If a location contains multiple places, combine them as a single string under 'location'.
+    - Recognize known institutions (like "Abilene Christian University") and assign them to the 'institution' key.
+    - Recognize phrases like "Museum of Natural History" or university collection names as institutions.
+    - If a query includes both a location and an institution, ensure the institution is NOT assigned to 'location'.
+    - When a query mentions both an organism and a museum/university/center/natural history/academy/wildlife refuge/laboratory/commission/college/institute/, assign it to the 'institution' field, not 'location' or 'spec_locality'.
+    - Do NOT assign institutions to 'collector', 'verbatim_date', or 'location'.
+    - Use 'location' only for geographic localities, lakes, cities, landmarks, etc.
     - Only use 'collector' for human names.
-    - Skip any field not explicitly stated. Output should be valid JSON only.
+    - Output should be valid JSON only.
     """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -88,8 +92,7 @@ def extract_query_fields(user_input):
     return json.loads(extracted)
 
 
-
-# In[25]:
+# In[21]:
 
 
 # Query Arctos function
@@ -111,7 +114,7 @@ def query_arctos(fields):
     return response.json()
 
 
-# In[26]:
+# In[23]:
 
 
 # Format results function
@@ -131,68 +134,166 @@ def format_results(results):
     return "\n\n".join(formatted)
 
 
-# In[57]:
+# In[61]:
+
+
+import pandas as pd
+
+# Load institution-to-guid_prefix mapping
+portal_df = pd.read_csv("/Users/karishmamehta/Documents/Practicum_Project/Streamlit_Community_Cloud/_portals.csv")  # Adjust path if needed
+
+# Normalize institution names and group guid_prefixes
+institution_to_prefix = {}
+for _, row in portal_df.iterrows():
+    name = row["INSTITUTION"].lower().strip()
+    prefix = row["GUID_PREFIX"].strip()
+    if name in institution_to_prefix:
+        institution_to_prefix[name].append(prefix)
+    else:
+        institution_to_prefix[name] = [prefix]
+
+
+# In[69]:
+
+
+TAXON_CATEGORY_MAP = {
+    "reptiles and amphibians": "herp",
+    "amphibians": "herp",
+    "reptiles": "herp",
+    "herpetofauna": "herp",
+    "herp": "herp",
+    "birds": "bird",
+    "aves": "bird",
+    "avian": "bird",
+    "bird": "bird",
+    "mammals": "mamm",
+    "mammal": "mamm",
+    "mammalia": "mamm",
+    "fishes": "fish",
+    "fish": "fish",
+    "pisces": "fish",
+    "insects": "ento",
+    "insect": "ento",
+    "entomology": "ento",
+    "bugs": "ento",
+    "ento": "ento",
+    "invertebrates": "inv",
+    "invertebrate": "inv",
+    "inv": "inv",
+    "parasites": "para",
+    "parasite": "para",
+    "para": "para",
+    "arthropods": "arth",
+    "arthropod": "arth",
+    "arth": "arth",
+    "plants": "plant",
+    "plant": "plant",
+    "flora": "plant",
+    "fungi": "fung",
+    "fungus": "fung",
+    "mycology": "fung",
+    "paleontology": "paleo",
+    "fossils": "paleo",
+    "paleo": "paleo",
+    "eggs": "egg",
+    "egg": "egg",
+    "tissues": "tissue",
+    "tissue": "tissue",
+    "dna": "dna",
+    "genetic material": "dna",
+    "genetics": "gen",
+    "genes": "gen",
+    "genetic": "gen",
+    "algae": "algae",
+    "botany": "bot",
+    "botanical": "bot",
+    "bot": "bot"
+}
+
+
+# In[71]:
 
 
 # Generate Arctos search URL function
-from urllib.parse import urlencode
 import inflect
-
 p = inflect.engine()
 
-US_STATES = {
-    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
-    "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
-    "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
-    "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York",
-    "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
-    "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
-    "Washington", "West Virginia", "Wisconsin", "Wyoming"
-}
-
+# Make sure TAXON_CATEGORY_MAP is defined globally before this function
 def generate_arctos_search_url(fields):
     base_url = "https://arctos.database.museum/search.cfm"
     params = {}
 
-    # Explicitly handle taxon_name field first
-    if "taxon_name" in fields and fields["taxon_name"] not in ["N/A", "not specified", "", None]:
-        taxon = fields["taxon_name"]
-        if isinstance(taxon, str):
-            taxon = taxon.strip()
-            if " " in taxon:
-                params["scientific_name"] = taxon
+    # Handle institution → guid_prefix mapping
+    if "institution" in fields:
+        inst = fields["institution"].lower().strip()
+
+        # Standardize taxon
+        taxon = fields.get("taxon_name", "")
+        taxon = taxon.lower().strip() if isinstance(taxon, str) else ""
+
+        # Try direct mapping using your category map
+        taxon_mapped = TAXON_CATEGORY_MAP.get(taxon, "")
+        if taxon_mapped:
+            taxon = taxon_mapped
+        else:
+            taxon = p.singular_noun(taxon) or taxon
+
+        matched_prefixes = []
+        if inst in institution_to_prefix:
+            prefixes = institution_to_prefix[inst]
+
+            if taxon:
+                for prefix in prefixes:
+                    if taxon and taxon in prefix.lower():  # match taxon with suffix in GUID_PREFIX
+                        matched_prefixes.append(prefix)
             else:
-                singular = p.singular_noun(taxon)
-                params["taxon_name"] = singular if singular else taxon
+                matched_prefixes = prefixes  # fallback to all if taxon not given
 
-    # Continue with rest of parameters
+            if matched_prefixes:
+                params["guid_prefix"] = ",".join(matched_prefixes)
+
+    # Add all other mapped fields
     for user_field, arctos_field in FIELD_TO_ARCTOS_PARAM.items():
-        if user_field == "taxon_name":
-            continue  # already handled above
+        if user_field == "institution":
+            continue  # skip, already handled
 
-        if user_field in fields and fields[user_field] not in ["N/A", "not specified", "", None]:
+        if user_field in fields:
             value = fields[user_field]
-            if isinstance(value, str):
-                value = value.strip()
+            if value not in ["N/A", "not specified", "", None]:
+                if user_field == "location":
+                    inst_val = fields.get("institution", "").lower()
+                    location_val = str(value).lower()
+                    if inst_val and inst_val in location_val:
+                        continue  # skip redundant location
+                params[arctos_field] = value
 
-            # Handle tissue flag
-            if user_field == "has tissue":
-                if (isinstance(value, str) and value.lower() in ["yes", "true", "1"]) or value is True:
-                    params["is_tissue"] = 1
-                    params["sp"] = "Tissue"
-                    continue
-
-            # Skip US states from being added as spec_locality
-            if arctos_field == "spec_locality" and value in US_STATES:
-                continue
-
-            params[arctos_field] = value
-
-    query_string = urlencode(params)
-    return f"{base_url}?{query_string}"
+    return f"{base_url}?{urlencode(params)}"
 
 
-# In[28]:
+# In[75]:
+
+
+# 📍 INTERACTIVE CHATBOT TEST
+
+# Example user input
+user_input = input("Enter your specimen search query: ")
+
+# Extract fields
+fields = extract_query_fields(user_input)
+print("\nExtracted Fields:")
+print(fields)
+
+# Generate Arctos URL
+arctos_url = generate_arctos_search_url(fields)
+print("\nGenerated Arctos Search URL:")
+print(arctos_url)
+
+# Query Arctos
+results = query_arctos(fields)
+# Format and show results
+response = format_results(results)
+print("\nChatbot Response:\n")
+print(response)
 
 # In[53]:
 
