@@ -317,14 +317,18 @@ st.image(logo, width=140)
 st.markdown("<h1 style='color: #003366;'>🔎 Arctos Query Search Chatbot</h1>", unsafe_allow_html=True)
 
 # Description
+
 st.markdown("""
-<div style='text-align: left; font-size: 16px; line-height: 1.6;color: #003366;'>
-This tool helps researchers search the Arctos database using natural language queries.<br>
-Enter phrases like <em>'Find shrews collected in New York in 1999'</em>
-or <em>'Search for Canis latrans in Alaska in 2001'</em>.<br>
-The chatbot will extract parameters, generate a URL, and retrieve matching records from the Arctos Search Database.
+<div style='text-align: left; font-size: 16px; line-height: 1.6; color: #003366;'>
+This tool helps researchers search the Arctos database using natural language queries.<br><br>
+Enter phrases like <em>'Find shrews collected in New York in 1999'</em> or <em>'Search for Canis latrans in Alaska in 2001'</em>.<br>
+The chatbot will extract parameters, generate a URL, and retrieve matching records from the Arctos Search Database.<br><br>
+<b>Note:</b> This chatbot is currently in training and under active development.<br>
+It has been created as part of a practicum project by MSBA students at University of California Davis in collaboration with the <b>Museum of Vertebrate Zoology (MVZ), UC Berkeley</b> and the <b>Arctos Consortium</b>.<br>
+The goal is to improve accessibility and usability of Arctos Database for researchers and curators.
 </div>
 """, unsafe_allow_html=True)
+
 
 
 # Search input
