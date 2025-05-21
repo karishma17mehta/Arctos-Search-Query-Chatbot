@@ -132,16 +132,25 @@ def generate_arctos_search_url(fields):
 
 def log_to_google_sheets(query, fields, url):
     try:
-        creds_dict = st.secrets["google_service_account"]
+        # Make a mutable copy of the secrets dictionary
+        creds_dict = dict(st.secrets["google_service_account"])
         creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
+
+        # Define scope and credentials
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
         client = gspread.authorize(creds)
+
+        # Append log entry
         sheet = client.open("arctos_search_logs").sheet1
-        sheet.append_row([datetime.now().strftime("%Y-%m-%d %H:%M:%S"), query, json.dumps(fields), url])
+        sheet.append_row([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            query,
+            json.dumps(fields),
+            url
+        ])
     except Exception as e:
         st.warning(f"Logging failed: {e}")
-
 # UI
 logo = Image.open("Arctos_logo.png")
 st.image(logo, width=140)
