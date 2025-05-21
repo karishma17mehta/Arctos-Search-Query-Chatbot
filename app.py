@@ -155,25 +155,27 @@ Enter queries like <em>'Find shrews collected in New York in 1999'</em>.<br><br>
 </div>
 """, unsafe_allow_html=True)
 
-user_query = st.text_input("🗣️ Enter your specimen search query:", placeholder="e.g. Search birds in Alaska")
-search_col, clear_col = st.columns([1, 1])
-search_clicked = search_col.button("🔍 Search")
-clear_clicked = clear_col.button("❌ Clear")
+user_query = st.text_input(" Enter your specimen search query:", placeholder="e.g. Search birds in Alaska")
+search_col, clear_col = st.columns([1, 2])
+search_clicked = search_col.button("SEARCH")
+clear_clicked = clear_col.button("CLEAR")
 
 if search_clicked and user_query:
     with st.spinner("Processing query..."):
         try:
             fields = extract_query_fields(user_query)
-            st.subheader("🧾 Extracted Fields")
+            st.subheader("Extracted Fields")
             st.json(fields)
 
             search_url = generate_arctos_search_url(fields)
             st.markdown(f"🔗 [**Open Arctos Search URL**]({search_url})")
 
             log_to_google_sheets(user_query, fields, search_url)
-            results = query_arctos(fields)
-            st.subheader("📋 Search Results")
-            st.text(format_results(results))
+
+           # Optionally disable result querying:
+           # results = query_arctos(fields)
+           # st.subheader("📋 Search Results")
+           # st.text(format_results(results))
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
