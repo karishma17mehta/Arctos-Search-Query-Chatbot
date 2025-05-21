@@ -54,7 +54,7 @@ TAXON_CATEGORY_MAP = {
 }
 
 FIELD_TO_ARCTOS_PARAM = {
-    "taxonomy": "scientific_name", "taxon": "scientific_name", "taxon_name": "scientific_name", "location": "spec_locality",
+    "taxonomy": "scientific_name", "taxon": "scientific_name", "taxon_name": "taxon_name", "location": "spec_locality",
     "any_geog": "any_geog", "country": "country", "state": "state_prov", "state_province": "state_prov",
     "part": "part_search", "part search": "part_search", "collector": "collector",
     "media type": "media_type", "type status": "type_status",
