@@ -65,22 +65,33 @@ FIELD_TO_ARCTOS_PARAM = {
 
 # Extract fields
 
+# Define extract query function
 def extract_query_fields(user_input):
     prompt = f"""
-    Extract relevant fields from: '{user_input}'.
-    Return JSON with only: 'taxon_name', 'verbatim_date', 'part', 'media_type', 'type_status', 
+    Extract the taxonomy, location, country, state, collector, year (verbatim_date), institution name (if any), interaction type (if any),
+    part (if any), media type (if any), and type status (if any) from this user query: '{user_input}'.
+
+    Return the result as a JSON dictionary using only these keys if mentioned:
+    'taxon_name', 'verbatim_date', 'part', 'media_type', 'type_status', 
     'has tissue', 'collector', 'country', 'state', 'location', 'institution'.
 
-    Instructions:
-    - Assign museum/university names to 'institution'.
-    - Only assign geographic locations to 'location'.
-    - Do not use 'location' for museums/universities.
+    Additional instructions:
+    - Recognize known institutions (like "Abilene Christian University") and assign them to the 'institution' key.
+    - Recognize phrases like "Museum of Natural History" or university collection names as institutions.
+    - If a query includes both a location and an institution, ensure the institution is NOT assigned to 'location'.
+    - When a query mentions both an organism and a museum/university/center/natural history/academy/wildlife refuge/laboratory/commission/college/institute/, assign it to the 'institution' field, not 'location' or 'spec_locality'.
+    - Do NOT assign institutions to 'collector', 'verbatim_date', or 'location'.
+    - Use 'location' only for geographic localities, lakes, cities, landmarks, etc.
+    - Only use 'collector' for human names.
+    - Output should be valid JSON only.
     """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
-    return json.loads(response.choices[0].message.content)
+    extracted = response.choices[0].message.content
+    return json.loads(extracted)
+
 
 # Query Arctos
 
