@@ -58,7 +58,7 @@ FIELD_TO_ARCTOS_PARAM = {
     "any_geog": "any_geog", "country": "country", "state": "state_prov", "state_province": "state_prov",
     "part": "part_search", "part search": "part_search", "collector": "collector",
     "media type": "media_type", "type status": "type_status",
-    "date": "verbatim_date", "year": "verbatim_date",
+    "date": "verbatim_date", "year": "verbatim_date", "verbatim_date" : "verbatim_date",
     "has tissue": "is_tissue", "scientific_name_match": "scientific_name_match_type",
     "agent role": "coll_role", "guid_prefix": "guid_prefix", "institution": "guid_prefix"
 }
