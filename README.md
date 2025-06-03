@@ -6,7 +6,9 @@ This AI-powered Streamlit chatbot allows researchers to search the Arctos biodiv
 
 Developed as part of a UC Davis MSBA practicum in collaboration with the Museum of Vertebrate Zoology (MVZ) and the Arctos Consortium, the tool enhances accessibility and usability of over 5 million biological specimen records.
 
-**📁 Project Structure**
+---
+
+## 📁 Project Structure
 File / Folder	Description
 app.py	Main Streamlit app with all chatbot logic
 _portals.csv	Mapping of institutions to Arctos GUID_PREFIX
@@ -14,7 +16,9 @@ requirements.txt	Python dependencies
 .streamlit/secrets.toml	Secure API credentials (OpenAI, Arctos, Google Sheets)
 README.md	This documentation
 
-**🔧 Features**
+--- 
+
+##🔧 Features
 
 - Natural language query input
 
@@ -24,8 +28,9 @@ README.md	This documentation
 
 - Query logs to Google Sheets for future analysis
 
+---
 
-**Functional Flow**
+## Functional Flow 
 
 - User Input: Natural query (e.g. "Find skinks collected by Charles Burt in San Diego")
 
@@ -39,15 +44,17 @@ README.md	This documentation
 
 - Query Logging: Logs the search with timestamp to Google Sheets
 
-
-**Google Sheets Logging**
+--- 
+## Google Sheets Logging
 
 All user queries, extracted fields, and the generated search URL are logged to a Google Sheet.
 
 This log can be used for user behavior analysis, training improvements, and future NLP enhancements.
 
 
-**Future Improvements**
+--- 
+
+## Future Improvements
 
 - Editable extracted fields before submitting
 
@@ -60,5 +67,4 @@ This log can be used for user behavior analysis, training improvements, and futu
 - OAuth-based user access and saved searches
 
 
-
-**
+---
