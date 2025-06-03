@@ -18,7 +18,7 @@ README.md	This documentation
 
 --- 
 
-##🔧 Features
+## 🔧 Features
 
 - Natural language query input
 
