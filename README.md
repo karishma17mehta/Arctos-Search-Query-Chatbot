@@ -1,4 +1,4 @@
-****🔍 Arctos Search Query Chatbot**
+**# 🔍 **Arctos Search Query Chatbot**
 This AI-powered Streamlit chatbot allows researchers to search the Arctos biodiversity database using plain English queries like:
 
 "Find birds collected in Alaska in 1999"
